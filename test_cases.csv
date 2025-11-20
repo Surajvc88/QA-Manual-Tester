@@ -1,0 +1,15 @@
+Module,TestCaseID,Title,Steps,Expected
+Sign Up,TC-SU-001,Signup with valid details,Open signup > Enter valid data > Submit,Account created and verification email sent
+Sign Up,TC-SU-002,Required fields empty,Leave fields empty and submit,Inline validation errors displayed
+Sign Up,TC-SU-003,Invalid email format,Enter invalid email,Show email format error
+Sign Up,TC-SU-004,Weak password,Enter weak password,Show password strength/complexity error
+Sign Up,TC-SU-007,Duplicate email,Enter already registered email,Show duplicate account error
+Forgot Password,TC-FP-001,Reset with valid email,Enter registered email > Submit,Reset email sent
+Forgot Password,TC-FP-002,Unregistered email,Enter unknown email,Generic message shown (no account leak)
+Forgot Password,TC-FP-003,Invalid email format,Enter invalid email,Show email validation error
+Sign with OTP,TC-OTP-001,Valid OTP login,Request OTP > Enter correct OTP,Login successful
+Sign with OTP,TC-OTP-002,Invalid OTP,Enter wrong OTP,Show error message
+Sign with OTP,TC-OTP-003,Expired OTP,Use after expiry,Show expired OTP message
+Login,TC-LG-001,Valid login,Enter correct username/password,Redirect to dashboard
+Login,TC-LG-002,Invalid password,Enter wrong password,Generic error message displayed
+Login,TC-LG-003,Empty fields,Submit with empty fields,Show required field errors
