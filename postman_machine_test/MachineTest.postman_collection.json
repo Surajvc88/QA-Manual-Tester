@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "Machine Test - API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login - Valid Credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userid\": \"{{userid}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function(){ pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('Response has token', function(){ pm.expect(json.token || json.data?.token).to.exist; });",
+              "var token = json.token || (json.data && json.data.token);",
+              "if(token){ pm.environment.set('authToken', token); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login - Invalid Credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userid\": \"9519510000\",\n  \"password\": \"wrongpass\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 401 or 400', function(){ pm.expect([400,401,403]).to.include(pm.response.code); });",
+              "var json = pm.response.json();",
+              "pm.test('Error message present', function(){ pm.expect(json.message || json.error).to.exist; });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Add Customer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Auto Customer {{timestamp}}\",\n  \"email\": \"auto+{{timestamp}}@example.com\",\n  \"phone\": \"9999999999\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/customers",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "customers"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// set timestamp variable",
+              "pm.environment.set('timestamp', Date.now());",
+              "var body = pm.request.body.raw;",
+              "body = body.replace(/{{timestamp}}/g, pm.environment.get('timestamp'));",
+              "pm.request.body.raw = body;"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201 or 200', function(){ pm.expect([200,201]).to.include(pm.response.code); });",
+              "var json = pm.response.json();",
+              "pm.test('Customer created id exists', function(){ pm.expect(json.id || json.data?.id).to.exist; });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
